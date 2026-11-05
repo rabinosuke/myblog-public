@@ -35,4 +35,4 @@ bleach==6.4.0
 sentry-sdk[django]==2.60.0
 
 # COCOのAIテキスト会話（公式SDK）
-openai==3.42.0
+openai==3.42.1
