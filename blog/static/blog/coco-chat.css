@@ -1,0 +1,166 @@
+/* 会話は必要な時だけ開き、本文を読みながら使える小窓にする。 */
+.coco-chat-button[hidden],
+.coco-chat-panel[hidden],
+.coco-chat-panel [hidden] {
+    display: none;
+}
+
+.coco-chat-button {
+    position: fixed;
+    right: 72px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 1002;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid #6ee7b7;
+    border-radius: 50%;
+    background: var(--bs-body-bg, #212529);
+    color: #a7f3d0;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 15%);
+}
+
+.coco-chat-button:hover,
+.coco-chat-button[aria-expanded="true"] {
+    background: #14533d;
+    color: #fff;
+}
+
+.coco-chat-panel {
+    position: fixed;
+    /* 右端で待機しているCOCOの左に置き、絵と入力欄を見比べられるようにする。 */
+    right: 192px;
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--coco-chat-keyboard-bottom, 0px));
+    z-index: 1003;
+    display: flex;
+    flex-direction: column;
+    width: 360px;
+    height: 460px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(var(--coco-chat-view-height, 100dvh) - max(16px, env(safe-area-inset-bottom)) - 16px);
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--bs-border-color, #495057);
+    border-radius: 18px;
+    background: var(--bs-body-bg, #212529);
+    color: var(--bs-body-color, #dee2e6);
+    box-shadow: 0 12px 40px rgb(0 0 0 / 28%);
+    text-align: left;
+}
+
+.coco-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 12px 12px 12px 16px;
+    border-bottom: 1px solid var(--bs-border-color, #495057);
+    background: linear-gradient(110deg, rgb(110 231 183 / 12%), transparent);
+}
+
+.coco-chat-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.coco-chat-heading h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+.coco-chat-heading p { margin: 4px 0 0; font-size: 0.75rem; color: var(--bs-secondary-color, #adb5bd); }
+.coco-chat-portrait { width: 42px; height: 42px; flex: 0 0 42px; overflow: hidden; border-radius: 50%; background: #e8efdc; }
+.coco-chat-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 9%; transform: scale(2.3); transform-origin: 50% 12%; }
+.coco-chat-close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 44px; border: 0; border-radius: 10px; background: transparent; color: inherit; font-size: 1.6rem; }
+.coco-chat-close:hover { background: var(--bs-secondary-bg, #343a40); }
+.coco-chat-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px; }
+.coco-chat-empty { margin: 18px 0; color: var(--bs-secondary-color, #adb5bd); font-size: 0.875rem; line-height: 1.8; text-align: center; }
+.coco-chat-messages { display: flex; flex-direction: column; gap: 12px; list-style: none; margin: 0; padding: 0; }
+.coco-chat-message { min-width: 0; max-width: 92%; padding: 10px 13px; border-radius: 14px; font-size: 0.9rem; line-height: 1.6; }
+.coco-chat-message-user { align-self: flex-end; border-bottom-right-radius: 4px; background: #174f3d; color: #f0fdf4; }
+.coco-chat-message-assistant { align-self: flex-start; border: 1px solid var(--bs-border-color, #495057); border-bottom-left-radius: 4px; background: var(--bs-tertiary-bg, #2b3035); }
+.coco-chat-message-author { display: block; margin-bottom: 4px; font-size: 0.6875rem; color: #a7f3d0; }
+.coco-chat-message p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.coco-chat-form { flex-shrink: 0; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--bs-border-color, #495057); }
+.coco-chat-input { display: block; width: 100%; min-height: 68px; max-height: 130px; padding: 10px 12px; resize: vertical; border: 1px solid var(--bs-border-color, #495057); border-radius: 10px; background: var(--bs-tertiary-bg, #2b3035); color: inherit; font: inherit; font-size: 16px; line-height: 1.5; }
+.coco-chat-input::placeholder { color: var(--bs-secondary-color, #adb5bd); }
+.coco-chat-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.coco-chat-form-footer span { font-size: 0.6875rem; line-height: 1.4; color: var(--bs-secondary-color, #adb5bd); }
+.coco-chat-send { min-width: 68px; min-height: 44px; padding: 8px 16px; border: 1px solid #51b98b; border-radius: 10px; background: #146c43; color: #fff; font-weight: 600; }
+.coco-chat-send:disabled { opacity: 0.45; cursor: default; }
+.coco-chat-send:not(:disabled):hover { background: #198754; }
+.coco-chat-status { min-height: 1.4em; margin: 5px 0 0; color: var(--bs-secondary-color, #adb5bd); font-size: 0.6875rem; }
+.coco-chat-button:focus-visible,
+.coco-chat-close:focus-visible,
+.coco-chat-send:focus-visible,
+.coco-chat-input:focus-visible { outline: 2px solid #6ee7b7; outline-offset: 3px; }
+
+@media (max-width: 640px), (max-height: 500px) {
+    /* スマホは下から開くシート。ソフトキーボードの上にも入力欄を残す。 */
+    .coco-chat-panel {
+        left: max(8px, env(safe-area-inset-left));
+        right: max(8px, env(safe-area-inset-right));
+        --coco-chat-edge-bottom: max(8px, env(safe-area-inset-bottom));
+        bottom: calc(var(--coco-chat-edge-bottom) + var(--coco-chat-keyboard-bottom, 0px));
+        width: auto;
+        max-width: none;
+        height: min(520px, calc(var(--coco-chat-view-height, 100dvh) - var(--coco-chat-edge-bottom) - 8px));
+        max-height: calc(var(--coco-chat-view-height, 100dvh) - var(--coco-chat-edge-bottom) - 8px);
+        border-radius: 18px;
+    }
+    .coco-chat-form { padding: 10px 12px max(10px, env(safe-area-inset-bottom)); }
+    .coco-chat-header { padding-top: 8px; padding-bottom: 8px; }
+    .coco-chat-scroll { padding: 12px; }
+    html[data-coco-chat-open="true"] .coco-chat-button { visibility: hidden; pointer-events: none; }
+}
+
+/* 参照先を常に示し、長い記事タイトルでも入力欄を押し出さない。 */
+.coco-chat-reference {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--bs-border-color, #495057);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+.coco-chat-reference a { color: var(--bs-link-color, #6ee7b7); }
+
+/* ページをまたぐ会話でも、過去の返信がどの記事を参照したか分かるようにする。 */
+.coco-chat-message-source { display: block; margin-top: 8px; font-size: 0.6875rem; overflow-wrap: anywhere; color: var(--bs-link-color, #6ee7b7); }
+
+.coco-chat-audio-controls { display: flex; justify-content: space-between; gap: 8px; flex-shrink: 0; padding: 4px 12px; }
+.coco-chat-audio-controls button { min-height: 32px; padding: 4px 8px; border: 1px solid var(--bs-border-color, #495057); border-radius: 8px; background: transparent; color: inherit; font-size: 0.75rem; }
+.coco-chat-audio-controls button[aria-pressed="true"] { color: #a7f3d0; background: #174f3d; }
+.coco-chat-audio-controls button:focus-visible { outline: 2px solid #6ee7b7; outline-offset: 2px; }
+
+
+/* タッチ操作では改行と送信を分け、押せる範囲を確保する。 */
+.coco-chat-keyboard-mobile { display: none; }
+@media (max-width: 640px), (pointer: coarse) {
+    .coco-chat-keyboard-desktop { display: none; }
+    .coco-chat-keyboard-mobile { display: inline; }
+    .coco-chat-audio-controls button { min-height: 44px; min-width: 64px; }
+    .coco-chat-input { resize: none; }
+}
+.coco-chat-close, .coco-chat-send, .coco-chat-audio-controls button, .coco-chat-button { touch-action: manipulation; }
+
+/* 横向きやキーボード表示中は、文字サイズを落とさずに操作部分を詰める。 */
+.coco-chat-panel[data-compact="true"] .coco-chat-header { padding: 0 8px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-portrait { width: 28px; height: 28px; flex-basis: 28px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-heading p { display: none; }
+.coco-chat-panel[data-compact="true"] .coco-chat-audio-controls { padding: 0 8px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-audio-controls button { min-height: 44px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-reference { padding: 4px 12px; -webkit-line-clamp: 1; }
+.coco-chat-panel[data-compact="true"] .coco-chat-scroll { padding: 8px 12px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 4px 8px;
+    padding: 8px 12px;
+}
+.coco-chat-panel[data-compact="true"] .coco-chat-input { height: 44px; min-height: 44px; max-height: 72px; padding: 8px 10px; }
+.coco-chat-panel[data-compact="true"] .coco-chat-form-footer { margin: 0; }
+.coco-chat-panel[data-compact="true"] #coco-chat-keyboard { display: none; }
+.coco-chat-panel[data-compact="true"] .coco-chat-status { grid-column: 1 / -1; margin: 0; }
+.coco-chat-panel[data-tight="true"] .coco-chat-reference { display: none; }

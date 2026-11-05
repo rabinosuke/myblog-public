@@ -1,0 +1,18 @@
+# このファイルは開発・CI環境でのみインストールする
+# 本番には絶対に入れない（gunicorn とは無関係なため）
+
+# 本番依存も含めて入れる
+-r requirements.txt
+
+# テストランナー
+pytest==9.1.1
+pytest-django==4.12.0
+
+# カバレッジ計測
+pytest-cov==7.1.0
+
+# テストデータ生成（factory_boy）
+factory-boy==3.3.3
+
+# 既知の脆弱性をCIでも確認する（本番イメージには入れない）
+pip-audit==2.10.1

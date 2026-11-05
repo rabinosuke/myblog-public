@@ -1,0 +1,537 @@
+/**
+ * Toast UI Editor + iframe プレビュー のレイアウト
+ */
+
+/* form-row 全幅化 */
+.form-row.field-body {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.form-row.field-body > div {
+    width: 100% !important;
+    max-width: none !important;
+    overflow: visible !important;
+}
+
+/* テキストエリアは隠す */
+textarea.toastui-editor-target {
+    display: none !important;
+}
+
+/* ============================================================
+   左右分割レイアウト
+   ============================================================ */
+
+#editor-preview-wrapper {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.editor-pane {
+    flex: 1 1 50%;
+    min-width: 0;  /* flex 子要素の overflow 防止 */
+}
+
+.preview-pane {
+    flex: 1 1 50%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background: #1e1e1e;
+    height: 700px;
+}
+
+.preview-header {
+    padding: 8px 12px;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-bottom: 1px solid #444;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-header-left,
+.preview-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 非同期保存ボタン */
+#async-save-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#async-save-btn:hover:not(:disabled) {
+    background: #218838;
+}
+
+#async-save-btn:disabled {
+    background: #6c757d;
+    cursor: wait;
+}
+
+#async-save-status {
+    font-size: 12px;
+    color: #b0b0b0;
+    min-width: 100px;
+}
+
+#async-save-status.saved {
+    color: #4caf50;
+}
+
+#async-save-status.saving {
+    color: #ffc107;
+}
+
+#async-save-status.error {
+    color: #ff5252;
+}
+
+/* デバイスサイズ切替ボタン群 */
+.device-buttons {
+    display: flex;
+    border: 1px solid #555;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.device-btn {
+    background: #2a2a2a;
+    color: #b0b0b0;
+    border: none;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    border-right: 1px solid #555;
+}
+
+.device-btn:last-child {
+    border-right: none;
+}
+
+.device-btn:hover {
+    background: #3a3a3a;
+    color: #fff;
+}
+
+.device-btn.active {
+    background: #417690;
+    color: white;
+}
+
+/* 更新・全画面ボタン */
+#preview-reload-btn,
+#preview-fullscreen-btn {
+    background: #417690;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#preview-reload-btn:hover,
+#preview-fullscreen-btn:hover {
+    background: #2e5b73;
+}
+
+/* プレビュー iframe エリア（中央寄せして縮小時の見え方をデバイス風に） */
+.preview-frame-area {
+    flex: 1;
+    background: #2a2a2a;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: auto;
+    padding: 0;
+}
+
+#preview-iframe {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: 600px;
+    border: none;
+    background: white;
+    transition: max-width 0.3s ease, width 0.3s ease, opacity 0.15s ease-out;
+}
+
+/* ============================================================
+   プレビュー全画面モード
+   ============================================================ */
+
+#editor-preview-wrapper.preview-fullscreen .editor-pane {
+    display: none;
+}
+
+#editor-preview-wrapper.preview-fullscreen .preview-pane {
+    flex: 1 1 100%;
+    height: 90vh;
+}
+
+/* 小さい画面では縦並びに */
+@media (max-width: 1400px) {
+    #editor-preview-wrapper {
+        flex-direction: column;
+    }
+    .editor-pane,
+    .preview-pane {
+        flex: none;
+        width: 100%;
+    }
+    .preview-pane {
+        height: 500px;
+    }
+}
+
+/* ============================================================
+   Toast UI Editor のダーク調整
+   ============================================================ */
+
+#toastui-editor-container {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.toastui-editor-defaultUI {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 700px !important;
+    background-color: #1e1e1e !important;
+    border-color: #444 !important;
+}
+
+.toastui-editor-main,
+.toastui-editor-md-container,
+.toastui-editor-ww-container,
+.toastui-editor-md-vertical-style {
+    width: 100% !important;
+}
+
+.toastui-editor-md-container .toastui-editor {
+    background-color: #1e1e1e !important;
+}
+
+.toastui-editor-md-container .toastui-editor .ProseMirror {
+    color: #e0e0e0 !important;
+    background-color: #1e1e1e !important;
+}
+
+/* マークダウン記号の色（記号自体だけ。テキスト本体は基本色に戻す） */
+.toastui-editor .ProseMirror .toastui-editor-md-heading,
+.toastui-editor .ProseMirror .toastui-editor-md-bold,
+.toastui-editor .ProseMirror .toastui-editor-md-italic,
+.toastui-editor .ProseMirror .toastui-editor-md-strike,
+.toastui-editor .ProseMirror .toastui-editor-md-list-item-style,
+.toastui-editor .ProseMirror .toastui-editor-md-block-quote {
+    color: #b0b0b0 !important;
+}
+
+/* 引用ブロック内の本文テキストは基本色のまま（Toast UI のデフォルト暗色で潰れるのを防ぐ） */
+.toastui-editor .ProseMirror blockquote,
+.toastui-editor .ProseMirror blockquote *,
+.toastui-editor .ProseMirror [class*="block-quote"],
+.toastui-editor .ProseMirror [class*="block-quote"] * {
+    color: #e0e0e0 !important;
+    background-color: transparent !important;
+    font-style: normal !important;
+}
+/* ただし「>」マーク自体は控えめな色に */
+.toastui-editor .ProseMirror .toastui-editor-md-block-quote-line-background,
+.toastui-editor .ProseMirror .toastui-editor-md-marked-text {
+    background-color: transparent !important;
+}
+
+/* ============================================================
+   リンク挿入ポップアップ（黒地に黒文字で見えない問題の対応）
+   ============================================================ */
+.toastui-editor-popup,
+.toastui-editor-popup-add-link,
+.toastui-editor-popup-add-image,
+.toastui-editor-popup-add-table {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
+}
+
+.toastui-editor-popup input[type="text"],
+.toastui-editor-popup input[type="url"],
+.toastui-editor-popup textarea {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+    caret-color: #e0e0e0 !important;
+}
+
+.toastui-editor-popup input::placeholder,
+.toastui-editor-popup textarea::placeholder {
+    color: #888 !important;
+}
+
+.toastui-editor-popup label,
+.toastui-editor-popup .toastui-editor-popup-body label {
+    color: #e0e0e0 !important;
+}
+
+.toastui-editor-popup .toastui-editor-close-button {
+    color: #e0e0e0 !important;
+}
+
+/* ============================================================
+   エディタ上部のタブを丸ごと非表示
+   右の iframe で本物プレビューが見えるので、編集モード以外は不要
+   ============================================================ */
+.toastui-editor-md-tab-container {
+    display: none !important;
+}
+
+/* ============================================================
+   コードブロックの背景を完全に削除（エディタ側のみ）
+   生のMarkdown表示なので、``` で囲まれているのが目印になればOK
+   ============================================================ */
+.toastui-editor .ProseMirror pre,
+.toastui-editor .ProseMirror code,
+.toastui-editor .ProseMirror .toastui-editor-md-code-block,
+.toastui-editor .ProseMirror .toastui-editor-md-code-block-line,
+.toastui-editor-md-mode pre,
+.toastui-editor-md-mode code,
+.toastui-editor [class*="code-block"],
+.toastui-editor [class*="toastui-editor-md-code"] {
+    background-color: transparent !important;
+    background: transparent !important;
+    color: #d4d4d4 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* コードブロックの開始/終了マーカー（``` の部分）は薄めに */
+.toastui-editor .ProseMirror .toastui-editor-md-code-block-start,
+.toastui-editor .ProseMirror .toastui-editor-md-code-block-end {
+    color: #888 !important;
+}
+
+/* インラインコード `xxx` も背景なしで色だけ */
+.toastui-editor .ProseMirror .toastui-editor-md-code {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #ffeb9c !important;
+}
+
+/* ツールバー */
+.toastui-editor-toolbar {
+    background-color: #f5f5f5 !important;
+    border-bottom: 1px solid #444 !important;
+}
+
+.toastui-editor-toolbar .toastui-editor-toolbar-icons {
+    background-color: #ffffff !important;
+    border: 1px solid #ccc !important;
+}
+
+.toastui-editor-toolbar .toastui-editor-toolbar-icons:hover {
+    background-color: #e8e8e8 !important;
+}
+
+/* 分割線・タブ */
+.toastui-editor-md-splitter {
+    background-color: #444 !important;
+}
+
+.toastui-editor-mode-switch {
+    background-color: #2a2a2a !important;
+    border-top-color: #444 !important;
+}
+
+.toastui-editor-mode-switch .tab-item {
+    color: #b0b0b0 !important;
+}
+
+.toastui-editor-mode-switch .tab-item.active {
+    color: #ffffff !important;
+    background-color: #1e1e1e !important;
+}
+
+/* カスタム寄せボタン（左/中央/右）
+   toastui-editor-toolbar-icons と同じ寸法に揃えないと縦位置がズレる */
+.toastui-editor-toolbar .toastui-custom-align-btn {
+    width: 24px !important;
+    height: 24px !important;
+    margin: 7px 5px !important;
+    padding: 0 !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid #ccc !important;
+    border-radius: 2px !important;
+    color: #555 !important;
+    font-size: 14px !important;
+    line-height: 22px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
+}
+
+.toastui-editor-toolbar .toastui-custom-align-btn:hover {
+    background-color: #e8e8e8 !important;
+}
+
+/* Toast UI Editor のテーブル記法ハイライト
+   ダークテーマだと文字色が黒のまま=背景と同化して読めなくなるので明色を強制 */
+.toastui-editor-md-table,
+.toastui-editor-md-table-cell,
+.toastui-editor-md-thead,
+.toastui-editor-md-tbody,
+.toastui-editor-md-table-cell-content,
+.toastui-editor-md-delimiter-row {
+    color: #e0e0e0 !important;
+    background-color: transparent !important;
+}
+
+/* セル区切りの「|」を見やすく */
+.toastui-editor-md-table-cell::before,
+.toastui-editor-md-table-cell::after {
+    color: #888 !important;
+}
+
+/* キャラ吹き出しボタン（Phase 5: DB 動的生成）
+   サムネ画像を円形に表示し、横に L/R ラベルを並べる */
+.toastui-bubble-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px !important;
+}
+
+.toastui-bubble-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.toastui-bubble-fallback {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #666;
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+}
+
+/* ─────────────────────────────────────────────
+   キャラ吹き出しドロップダウン（Phase 5b）
+   トリガーボタン + body 直下に出すパネル
+   ───────────────────────────────────────────── */
+.toastui-bubble-trigger {
+    font-size: 12px !important;
+    padding: 2px 6px !important;
+}
+
+.toastui-bubble-panel {
+    position: absolute;
+    z-index: 10000;
+    background: #2a2a2a;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 6px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    padding: 8px 0;
+    min-width: 320px;
+    max-height: 480px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.toastui-bubble-panel .bp-empty {
+    padding: 12px 16px;
+    color: #aaa;
+}
+.toastui-bubble-panel .bp-empty a {
+    color: #79b8ff;
+}
+
+.toastui-bubble-panel .bp-group + .bp-group {
+    margin-top: 4px;
+    border-top: 1px solid #444;
+    padding-top: 4px;
+}
+
+.toastui-bubble-panel .bp-group-title {
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toastui-bubble-panel .bp-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+}
+.toastui-bubble-panel .bp-row:hover {
+    background: #3a3a3a;
+}
+
+.toastui-bubble-panel .bp-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.toastui-bubble-panel .bp-thumb-fallback {
+    background: #666;
+    color: #fff;
+    text-align: center;
+    line-height: 24px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.toastui-bubble-panel .bp-name {
+    flex: 1;
+    color: #eee;
+}
+
+.toastui-bubble-panel .bp-slug {
+    font-family: monospace;
+    font-size: 11px;
+    color: #888;
+    margin-right: 4px;
+}
+
+.toastui-bubble-panel .bp-insert {
+    background: #417690;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.toastui-bubble-panel .bp-insert:hover {
+    background: #205067;
+}

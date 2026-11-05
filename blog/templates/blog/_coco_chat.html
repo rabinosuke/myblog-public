@@ -1,0 +1,61 @@
+{% load static %}
+
+{# 会話の入口を手振りボタンから分け、COCOを隠しても入力画面を開けるようにする。 #}
+<button id="coco-chat-button" type="button" class="coco-chat-button"
+        aria-label="COCOと話す" aria-expanded="false" aria-controls="coco-chat-panel"
+        title="COCOと話す" hidden>
+    <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor"
+         stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 11.5a7.7 7.7 0 0 1-.8 3.4 8 8 0 0 1-7.2 4.4 7.7 7.7 0 0 1-3.4-.8L3 20l1.5-5.6a7.7 7.7 0 0 1-.8-3.4A8 8 0 0 1 8.1 3.8a7.7 7.7 0 0 1 3.4-.8h.5a8 8 0 0 1 8 8v.5Z"/>
+        <path d="M8 11h8M8 14h5"/>
+    </svg>
+</button>
+
+{# 記事を操作しながら使う小窓。背景の操作を止めるモーダルにはしない。 #}
+<section id="coco-chat-panel" class="coco-chat-panel" role="dialog"
+         data-speech-enabled="{{ coco_speech_enabled|yesno:'true,false' }}"
+         aria-labelledby="coco-chat-title" aria-describedby="coco-chat-hint" hidden>
+    <header class="coco-chat-header">
+        <div class="coco-chat-heading">
+            <span class="coco-chat-portrait" aria-hidden="true">
+                <img src="{% static 'blog/coco/neutral.png' %}" alt="" width="512" height="768">
+            </span>
+            <div>
+                <h2 id="coco-chat-title">COCOと話す</h2>
+                <p id="coco-chat-hint">AIとお話し{% if coco_speech_enabled %}・音声はAI生成{% endif %}</p>
+            </div>
+        </div>
+        <button id="coco-chat-close" type="button" class="coco-chat-close" aria-label="会話を閉じる">
+            <span aria-hidden="true">×</span>
+        </button>
+    </header>
+
+    {% if post.is_published %}
+    <p class="coco-chat-reference">参照中：<a href="{{ post.get_absolute_url }}">{{ post.title }}</a></p>
+    {% endif %}
+
+    <div class="coco-chat-audio-controls">
+        <button id="coco-chat-voice" type="button" aria-pressed="false"{% if not coco_speech_enabled %} hidden disabled{% endif %}>読み上げ：OFF</button>
+        <button id="coco-chat-stop" type="button" hidden>停止</button>
+    </div>
+
+    <div id="coco-chat-scroll" class="coco-chat-scroll">
+        <p id="coco-chat-empty" class="coco-chat-empty">{% if post.is_published %}「この記事を要約して」と聞いてみてね。<br>ページを移動しても会話は続きます。{% else %}「こんにちは」と話しかけてみてね。<br>ページを移動しても会話は続きます。{% endif %}</p>
+        <ol id="coco-chat-messages" class="coco-chat-messages" role="log"
+            aria-label="会話履歴" aria-live="polite" aria-relevant="additions text" aria-busy="false"></ol>
+    </div>
+
+    <form id="coco-chat-form" class="coco-chat-form" data-api-url="{% url 'blog:coco-chat' %}"{% if post.is_published %}
+          data-article-slug="{{ post.slug }}" data-article-title="{{ post.title }}"{% endif %}>
+        {% csrf_token %}
+        <label for="coco-chat-input" class="visually-hidden">COCOへのメッセージ</label>
+        <textarea id="coco-chat-input" name="message" class="coco-chat-input"
+                  rows="2" maxlength="1000" placeholder="メッセージを入力…"
+                  aria-describedby="coco-chat-keyboard" autocomplete="off" enterkeyhint="enter"></textarea>
+        <div class="coco-chat-form-footer">
+            <span id="coco-chat-keyboard"><span class="coco-chat-keyboard-desktop">Enterで送信<br>Shift＋Enterで改行</span><span class="coco-chat-keyboard-mobile">送信ボタンで送れます</span></span>
+            <button id="coco-chat-send" type="submit" class="coco-chat-send" disabled>送信</button>
+        </div>
+        <p id="coco-chat-status" class="coco-chat-status" role="status" aria-live="polite">話しかけてね</p>
+    </form>
+</section>

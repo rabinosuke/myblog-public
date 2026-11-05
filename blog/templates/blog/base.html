@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}COCO LAB{% endblock %}</title>
+
+    {# SEO: 説明文。各ページが上書きする。デフォルトはサイト全体の説明 #}
+    <meta name="description" content="{% block meta_description %}AIと一緒にDjangoでブログを作る過程を記事にしています。{% endblock %}">
+
+    {# OGP: SNSでシェアされた時のプレビュー表示用 #}
+    <meta property="og:title" content="{% block og_title %}COCO LAB{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}AIと一緒にDjangoでブログを作る過程を記事にしています。{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% block og_image %}{% endblock %}
+
+    {# Twitter Card: TwitterでURLを貼った時のカード表示 #}
+    <meta name="twitter:card" content="summary_large_image">
+
+    {# canonical URL: 同じ内容を複数URLで表示する場合の正規URL #}
+    {# クエリパラメータ等を除外することで重複コンテンツ扱いを避ける #}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+
+    {# 管理画面プレビューでは検索エンジン向けJSON-LDを実行対象に含めない。 #}
+    {% if not is_admin_preview %}
+        {# 構造化データ：各ページが上書きできる #}
+        {% block structured_data %}{% endblock %}
+    {% endif %}
+
+    {# robots 等の追加メタ：タグ一覧など noindex にしたいページが上書きする #}
+    {% block extra_meta %}{% endblock %}
+
+    {# ファビコン関連 #}
+    <link rel="icon" type="image/x-icon" href="{% static 'blog/favicons/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'blog/favicons/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'blog/favicons/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'blog/favicons/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'blog/favicons/site.webmanifest' %}">
+
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {# 本番の30日immutableキャッシュが残っても、新しいスタイルを反映させる。 #}
+    <link href="{% static 'blog/blog.css' %}?v=20261103-coco-mobile" rel="stylesheet">
+    {% if not is_admin_preview %}
+    <link href="{% static 'blog/coco-chat.css' %}?v=20261103-coco-mobile" rel="stylesheet">
+    {% endif %}
+    {# コードハイライト用CSS（Pygmentsのmonokaiテーマ） #}
+    <link href="{% static 'blog/codehilite.css' %}" rel="stylesheet">
+
+    {# 記事詳細のMathJaxなど、ページ固有のhead要素 #}
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{# 共通ヘッダー #}
+<div class="container">
+    <header class="border-bottom lh-1 py-3">
+        <div class="row flex-nowrap justify-content-between align-items-center">
+            <div class="col-4 pt-1"></div>
+            <div class="col-4 text-center">
+                <a class="blog-header-logo text-body-emphasis text-decoration-none" href="{% url 'blog:index' %}">COCO LAB</a>
+            </div>
+            <div class="col-4 d-flex justify-content-end align-items-center">
+                {# 検索フォーム：GETでsearchビューに送る #}
+                <form class="d-flex" action="{% url 'blog:search' %}" method="get" role="search">
+                    <input class="form-control form-control-sm" type="search" name="q"
+                           placeholder="検索" value="{{ request.GET.q|default:'' }}" aria-label="検索">
+                </form>
+            </div>
+        </div>
+    </header>
+
+    {# カテゴリナビ #}
+    <div class="nav-scroller py-1 mb-3 border-bottom">
+        <nav class="nav nav-underline justify-content-between">
+            {% for category in categories %}
+            <a class="nav-item nav-link link-body-emphasis"
+               href="{% url 'blog:category' category.slug %}">{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+    </div>
+</div>
+
+<main class="container">
+    {# スマホでは横の余白をcontainer内へ収め、横スクロールを防ぐ。 #}
+    <div class="row gx-4 gy-5 gx-lg-5">
+
+        {# メインコンテンツ：各ページが上書きする #}
+        <div class="col-md-8">
+            {% block content %}{% endblock %}
+        </div>
+
+        {# 共通サイドバー #}
+        <div class="col-md-4">
+            <div class="position-sticky" style="top: 2rem;">
+
+                {# ページ固有のサイドバー要素（記事ページなら目次が上に出る） #}
+                {% comment %}
+                    目次は最上段に置く。よく読まれている記事の下だと
+                    スクロール追従に到達する前に目次自体が画面外に出てしまうため。
+                {% endcomment %}
+                {% block sidebar_extra %}{% endblock %}
+
+                {# About #}
+                <div class="p-4 mb-3 bg-body-tertiary rounded">
+                    <h4 class="fst-italic">About</h4>
+                    <p class="mb-0">AIと一緒にDjangoでブログを作る過程を記事にしています。初心者の方でもDockerさえあれば同じ環境が作れます。</p>
+                </div>
+
+                {# よく読まれている記事 #}
+                <div>
+                    <h4 class="fst-italic">よく読まれている記事</h4>
+                    <ul class="list-unstyled">
+                        {% for post in popular_posts %}
+                        <li>
+                            <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top"
+                               href="{% url 'blog:detail' post.slug %}">
+                                <div class="col-lg-8">
+                                    <h6 class="mb-0">{{ post.title }}</h6>
+                                    <small class="text-body-secondary">{{ post.view_count }} views</small>
+                                </div>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                {# カテゴリ一覧 #}
+                <div class="p-4">
+                    <h4 class="fst-italic">カテゴリ</h4>
+                    <ol class="list-unstyled mb-0">
+                        {% for category in categories %}
+                        <li><a href="{% url 'blog:category' category.slug %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+{# 共通フッター #}
+<footer class="py-5 text-center text-body-secondary bg-body-tertiary">
+    <p>COCO LAB - ココ博士の実験室</p>
+    <p class="mb-0"><a href="#">ページトップへ</a></p>
+</footer>
+
+{# 管理画面iframeではCOCOの重なりとGAの二重計測を避ける。 #}
+{% if not is_admin_preview %}
+    {% include 'blog/_coco_avatar.html' %}
+    {% include 'blog/_coco_chat.html' %}
+    <script type="module" src="{% static 'blog/coco.js' %}?v=20261103-coco-mobile"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {# Google Analytics 4 #}
+    {# 本番公開時に GA_TRACKING_ID を settings.py 経由で設定する #}
+    {# 開発中は表示されないように DEBUG=False かつIDが設定されている時のみ出力する #}
+    {% if not debug and GA_TRACKING_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_TRACKING_ID }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ GA_TRACKING_ID }}');
+    </script>
+    {% endif %}
+
+    {# 記事詳細ページの目次ハイライト用JS。他ページでは何もせず即終了するので常時読み込み可。 #}
+    <script src="{% static 'blog/toc.js' %}" defer></script>
+
+    {# コードブロックにコピーボタンを付与するJS。 #}
+    <script src="{% static 'blog/code_copy.js' %}" defer></script>
+{% endif %}
+
+</body>
+</html>

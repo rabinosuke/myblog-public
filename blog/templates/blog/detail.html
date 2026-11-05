@@ -1,0 +1,207 @@
+{% extends 'blog/base.html' %}
+{% load markdown_tags %}
+
+{% block title %}{{ post.title }} - COCO LAB{% endblock %}
+
+{% block extra_head %}
+{# Arithmatexがgeneric形式で生成した .arithmatex のみをMathJaxに処理させる。 #}
+<script>
+    window.MathJax = {
+        loader: {
+            load: ['ui/safe']
+        },
+        tex: {
+            inlineMath: [['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']],
+            processEscapes: true,
+            processEnvironments: true
+        },
+        options: {
+            ignoreHtmlClass: '.*',
+            processHtmlClass: 'arithmatex',
+            // 投稿内TeXからリンク・class・styleを生成させず、管理画面も保護する。
+            safeOptions: {
+                allow: {
+                    URLs: 'none',
+                    classes: 'none',
+                    cssIDs: 'none',
+                    styles: 'none'
+                }
+            }
+        }
+    };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-chtml.js"></script>
+{% endblock %}
+
+{# SEO: 記事ごとの説明文として要約を使う #}
+{% block meta_description %}{{ post.summary }}{% endblock %}
+
+{# OGP: 記事ページは og:type を article にする #}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.summary }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}
+    {% if post.eyecatch %}
+    {# 絶対URL（http付き）で出力する必要があるので build_absolute_uri を使う #}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.eyecatch.url }}">
+    {% endif %}
+{% endblock %}
+
+{# 構造化データ（JSON-LD）：Google検索結果でリッチスニペット表示用 #}
+{# BlogPosting スキーマで記事情報をマークアップする #}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title|escapejs }}",
+    "description": "{{ post.summary|escapejs }}",
+    {% if post.eyecatch %}
+    "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.eyecatch.url }}",
+    {% endif %}
+    "datePublished": "{{ post.published_at|date:'c' }}",
+    "dateModified": "{{ post.updated_at|date:'c' }}",
+    "author": {
+        "@type": "Person",
+        "name": "ココ"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "COCO LAB"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+    {# パンくずリスト #}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'blog:index' %}">ホーム</a></li>
+            {% if post.category %}
+            <li class="breadcrumb-item"><a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ post.title }}</li>
+        </ol>
+    </nav>
+
+    {# 記事本体 #}
+    <article class="blog-post">
+
+        {# アイキャッチ画像 #}
+        {% if post.eyecatch %}
+        <img src="{{ post.eyecatch.url }}" alt="{{ post.title }}"
+             class="article-eyecatch img-fluid rounded mb-4 w-100">
+        {% endif %}
+
+        <h1 class="display-5 link-body-emphasis mb-2">{{ post.title }}</h1>
+
+        <p class="blog-post-meta">
+            {# 公開日。Schema.org の datePublished は JSON-LD 側で別途設定済み #}
+            <time datetime="{{ post.published_at|date:'c' }}">公開：{{ post.published_at|date:"Y年n月j日" }}</time>
+            {# 更新日：公開日と「同日」なら表示しない（typo修正等のノイズ防止）。日付（時刻除く）が違う場合だけ表示する #}
+            {% if post.updated_at|date:"Y-m-d" != post.published_at|date:"Y-m-d" %}
+                ・ <time datetime="{{ post.updated_at|date:'c' }}">更新：{{ post.updated_at|date:"Y年n月j日" }}</time>
+            {% endif %}
+            {% if post.category %}
+                ・ <a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a>
+            {% endif %}
+            ・ {{ post.view_count }} views
+        </p>
+
+        {# 要約 #}
+        {% if post.summary %}
+        <div class="lead mb-4 p-3 bg-body-tertiary rounded">{{ post.summary }}</div>
+        {% endif %}
+
+        {# 本文（Markdownで書かれている前提） #}
+        <div class="blog-post-body">
+            {{ body_html|safe }}
+        </div>
+
+        {% comment %}
+        タグ：付いていれば記事末尾にバッジで並べる。
+        管理画面プレビューは未保存（pkなし）でM2Mを引けないため post.pk で短絡する。
+        {% endcomment %}
+        {% if post.pk and post.tags.all %}
+        <div class="blog-post-tags mt-4 pt-3 border-top">
+            {% for tag in post.tags.all %}
+            <a href="{% url 'blog:tag' tag.slug %}"
+               class="badge rounded-pill text-bg-light text-decoration-none me-1">#{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+
+    {# 前後の記事 #}
+    <nav class="d-flex justify-content-between border-top pt-4 mb-5" aria-label="前後の記事">
+        {% if prev_post %}
+        <a href="{% url 'blog:detail' prev_post.slug %}" class="btn btn-outline-primary rounded-pill">
+            &larr; {{ prev_post.title|truncatechars:20 }}
+        </a>
+        {% else %}
+        <span></span>
+        {% endif %}
+
+        {% if next_post %}
+        <a href="{% url 'blog:detail' next_post.slug %}" class="btn btn-outline-primary rounded-pill">
+            {{ next_post.title|truncatechars:20 }} &rarr;
+        </a>
+        {% endif %}
+    </nav>
+
+    {# 関連記事 #}
+    {% if related_posts %}
+    <section class="mb-5">
+        <h3 class="pb-3 mb-4 fst-italic border-bottom">関連記事</h3>
+        <div class="row g-4">
+            {% for related in related_posts %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    {# 軽量化のためカードでは小さいサムネイル（自動生成）を使う #}
+                    {% if related.eyecatch %}
+                    <a href="{% url 'blog:detail' related.slug %}">
+                        <img src="{{ related.eyecatch_thumbnail.url }}" alt="{{ related.title }}"
+                             class="card-img-top" style="aspect-ratio: 16/9; object-fit: cover;">
+                    </a>
+                    {% endif %}
+                    <div class="card-body">
+                        {% if related.category %}
+                        <span class="badge bg-secondary mb-2">{{ related.category.name }}</span>
+                        {% endif %}
+                        <h5 class="card-title">
+                            <a href="{% url 'blog:detail' related.slug %}" class="text-decoration-none link-body-emphasis">{{ related.title }}</a>
+                        </h5>
+                        <p class="card-text text-muted small">{{ related.summary|truncatechars:60 }}</p>
+                    </div>
+                    <div class="card-footer text-muted small">
+                        {{ related.published_at|date:"Y年n月j日" }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+{% endblock %}
+
+
+{# 共通サイドバーの一番上に目次を差し込む。
+   長い目次でもスクロール追従の頭で見えるのが目的 #}
+{% block sidebar_extra %}
+    {% if toc_html %}
+    <div class="post-toc mb-4" aria-label="目次">
+        <h4 class="fst-italic">目次</h4>
+        <nav class="post-toc-nav">
+            {{ toc_html|safe }}
+        </nav>
+    </div>
+    {% endif %}
+{% endblock %}

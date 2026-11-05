@@ -1,0 +1,23 @@
+{% load humanize %}
+<div style="max-width:1050px; overflow-x:auto">
+    <p><strong>{{ day|date:"Y年n月j日" }}・日本時間</strong> ／ 月の集計は毎月1日〜末日です。</p>
+    <table style="width:100%; margin:12px 0">
+        <thead><tr><th>項目</th><th>今日</th><th>今月</th></tr></thead>
+        <tbody>
+            <tr><th>会話受付数</th><td>{{ today.total_requests|intcomma }} / {{ limits.chat_daily_limit|intcomma }} 回</td><td>{{ month.total_requests|intcomma }} / {{ limits.chat_monthly_limit|intcomma }} 回</td></tr>
+            <tr><th>AI呼び出し数</th><td>{{ today.ai_requests|intcomma }} 回</td><td>{{ month.ai_requests|intcomma }} 回</td></tr>
+            <tr><th>AI入力トークン</th><td>{{ today.ai_input_tokens|intcomma }}</td><td>{{ month.ai_input_tokens|intcomma }}</td></tr>
+            <tr><th>入力のうちキャッシュ済み</th><td>{{ today.ai_cached_input_tokens|intcomma }}</td><td>{{ month.ai_cached_input_tokens|intcomma }}</td></tr>
+            <tr><th>AI出力トークン</th><td>{{ today.ai_output_tokens|intcomma }}</td><td>{{ month.ai_output_tokens|intcomma }}</td></tr>
+            <tr><th>AI入力＋出力トークン合計</th><td>{{ today_total_tokens|intcomma }}</td><td>{{ month_total_tokens|intcomma }}</td></tr>
+            <tr><th>トークン内訳を取得できていないAI呼び出し</th><td>{{ today_unreported|intcomma }} 回</td><td>{{ month_unreported|intcomma }} 回</td></tr>
+            <tr><th>音声の新規生成文字数</th><td>{{ today.speech_characters|intcomma }} / {{ limits.speech_daily_char_limit|intcomma }} 文字</td><td>{{ month.speech_characters|intcomma }} / {{ limits.speech_monthly_char_limit|intcomma }} 文字</td></tr>
+            <tr><th>音声の新規生成試行数</th><td>{{ today.speech_requests|intcomma }} 回</td><td>{{ month.speech_requests|intcomma }} 回</td></tr>
+            <tr><th>保存済み音声の再利用</th><td>{{ today.speech_cache_hits|intcomma }} 回</td><td>{{ month.speech_cache_hits|intcomma }} 回</td></tr>
+            <tr><th>音声生成の失敗</th><td>{{ today.speech_failures|intcomma }} 回</td><td>{{ month.speech_failures|intcomma }} 回</td></tr>
+        </tbody>
+    </table>
+    <p>会話受付数には定型返答も含みます。定型返答ではAIを呼び出しません。保存済み音声の再利用は、新規生成の文字数を消費しません。</p>
+    <p>入力・出力トークンはAPIが返した使用量です。音声は演技指示・空白を含め、送信前に文字数を予約します。失敗やタイムアウトでも予約分は戻しません。</p>
+    <p>このブログの利用だけを集計します。詳細集計の導入前のトークン数・音声文字数は含みません。既存の会話受付数は引き継いでいます。</p>
+</div>

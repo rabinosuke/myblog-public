@@ -1,0 +1,50 @@
+{
+  "name": "wave",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "image": "sheet.png",
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 768
+    },
+    {
+      "x": 512,
+      "y": 768
+    }
+  ],
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    2,
+    3,
+    2,
+    1,
+    0
+  ],
+  "holdMs": [
+    480,
+    160,
+    240,
+    160,
+    240,
+    160,
+    240,
+    160,
+    480
+  ],
+  "periodMs": 2320,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}

@@ -1,0 +1,38 @@
+# Django本体
+django==6.0.10
+
+# 本番用Webサーバー
+gunicorn==26.0.0
+
+# MySQLクライアント
+mysqlclient==2.2.8
+
+# 環境変数管理
+django-environ==0.13.0
+
+# 静的ファイル配信
+whitenoise==6.12.0
+
+# 画像処理
+Pillow==13.0.0
+
+# Markdown → HTML 変換
+markdown==3.10.2
+
+# Markdown内のTeX数式をMathJax用の安全なHTMLに保存
+pymdown-extensions==11.0.2
+
+# コードハイライト（markdownのcodehilite拡張で使用）
+pygments==2.20.0
+
+# 画像の自動リサイズ・サムネイル生成
+django-imagekit==6.1.0
+
+# HTML サニタイズ（投稿者由来のHTMLを安全に出力するための allowlist フィルタ）
+bleach==6.4.0
+
+# エラー監視
+sentry-sdk[django]==2.60.0
+
+# COCOのAIテキスト会話（公式SDK）
+openai==3.42.0

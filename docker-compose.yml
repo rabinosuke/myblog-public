@@ -1,0 +1,71 @@
+# ===========================================
+# 開発環境用 Docker Compose設定
+# ===========================================
+
+services:
+
+  # -------------------------------------------
+  # Nginx（Webサーバー）
+  # ブラウザからのリクエストを受けてDjangoに転送する
+  # -------------------------------------------
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx.dev.conf:/etc/nginx/nginx.conf:ro  # 開発用Nginx設定ファイル
+      - ./staticfiles:/app/staticfiles                    # 静的ファイル
+      - ./media:/app/media                                # アップロード画像
+    ports:
+      - "127.0.0.1:8080:80"    # http://localhost:8080/ で確認
+    depends_on:
+      web:
+        condition: service_healthy  # webが完全に起動してからNginxを起動する
+
+  # -------------------------------------------
+  # Django（アプリケーションサーバー）
+  # -------------------------------------------
+  web:
+    build:
+      context: .
+      args:
+        # 開発環境ではテスト系ツールも入れる
+        # 本番用 docker-compose.prod.yml では未指定 → Dockerfile の default=false が効く（DRY）
+        INSTALL_DEV: "true"
+    # 文ごとの音声生成（最大4回）を待てる上限。会話の同時実行数はDB側で別に制限。
+    command: gunicorn myblog.wsgi:application --bind 0.0.0.0:8000 --timeout 90
+    volumes:
+      - .:/app                              # Djangoのコード
+      - ./staticfiles:/app/staticfiles      # 静的ファイル
+      - ./media:/app/media                  # アップロード画像
+    # webのポートを外部公開せず、NginxがX-Real-IPを上書きする構成だけで信頼する。
+    environment:
+      COCO_CHAT_TRUST_PROXY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s  # 起動直後の猶予時間
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # -------------------------------------------
+  # MySQL（データベース）
+  # -------------------------------------------
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # DBにはwebコンテナーから接続する。ホスト側へのポート公開はしない。
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+volumes:
+  mysql_data:

@@ -1,0 +1,102 @@
+name: CI
+
+# トリガー：main への push と全 PR で走る
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Node.js 20 → 24 への先行移行
+# GitHub Actions runner は 2026-06-02 から Node.js 24 デフォルト化、
+# 2026-09-16 に Node.js 20 完全除去。
+# この env で先行オプトインすると deprecation warning が消える。
+# 参考: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-placeholder-only-never-used-in-production-0123456789
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      DATABASE_URL: mysql://blog_user:test_user_pw@127.0.0.1:3306/myblog
+
+    # MySQL コンテナを起動して使う
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_root_pw
+          MYSQL_DATABASE: myblog
+          MYSQL_USER: blog_user
+          MYSQL_PASSWORD: test_user_pw
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12.16"
+
+      - name: Cache pip
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev pkg-config
+
+      - name: Install dev requirements
+        run: pip install -r requirements-dev.txt
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -ptest_root_pw && break
+            sleep 2
+          done
+
+      - name: Grant test DB privileges
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -ptest_root_pw -e "
+            GRANT ALL PRIVILEGES ON \`test\_%\`.* TO 'blog_user'@'%';
+            FLUSH PRIVILEGES;
+          "
+
+      - name: Audit runtime and test dependencies
+        run: pip-audit -r requirements-dev.txt --progress-spinner off
+
+      - name: Run JavaScript security and COCO tests
+        run: node --test blog/tests/js/*.test.mjs
+
+      - name: Check migration files
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run pytest with coverage
+        run: pytest --cov=blog --cov-report=term
+
+      - name: Upload coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-html
+          path: htmlcov/
+          if-no-files-found: ignore

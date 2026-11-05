@@ -1,0 +1,55 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ page_title }} - COCO LAB{% endblock %}
+
+{# タグ一覧など中身の薄いページは検索結果に出さない（回遊用）。
+   noindex,follow なので「インデックスはしないがリンクは辿る」 #}
+{% block extra_meta %}{% if noindex %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
+
+{% block content %}
+
+    {# ページタイトル #}
+    <h2 class="pb-4 mb-4 fst-italic border-bottom">{{ page_title }}</h2>
+
+    {# 検索ページのときだけ表示するヒット件数 #}
+    {% if query %}
+    <p class="text-muted">「{{ query }}」の検索結果：{{ post_list|length }}件</p>
+    {% endif %}
+
+    {# 記事一覧 #}
+    {% for post in post_list %}
+    <article class="blog-post">
+        <div class="row g-3">
+            {# 軽量化のため一覧では小さいサムネイル（自動生成）を使う #}
+            {% if post.eyecatch %}
+            <div class="col-md-4">
+                <a href="{% url 'blog:detail' post.slug %}">
+                    <img src="{{ post.eyecatch_thumbnail.url }}" alt="{{ post.title }}"
+                         class="img-fluid rounded" style="aspect-ratio: 16/9; object-fit: cover;">
+                </a>
+            </div>
+            <div class="col-md-8">
+            {% else %}
+            <div class="col-12">
+            {% endif %}
+                <h2 class="h3 link-body-emphasis mb-1">
+                    <a href="{% url 'blog:detail' post.slug %}" class="text-decoration-none link-body-emphasis">{{ post.title }}</a>
+                </h2>
+                <p class="blog-post-meta">
+                    {{ post.published_at|date:"Y年n月j日" }}
+                    {% if post.category %}
+                        ・ <a href="{% url 'blog:category' post.category.slug %}">{{ post.category.name }}</a>
+                    {% endif %}
+                </p>
+                <p>{{ post.summary }}</p>
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <p class="text-muted">該当する記事がありません。</p>
+    {% endfor %}
+
+    {# ページネーション #}
+    {% include 'blog/_pagination.html' %}
+
+{% endblock %}

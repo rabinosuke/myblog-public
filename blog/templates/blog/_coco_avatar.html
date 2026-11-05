@@ -1,0 +1,69 @@
+{% load static %}
+
+{# 旧素材のキャッシュが残らないよう、コマ追加時はカタログと素材を版ごとに切り替える。 #}
+
+{# 保存済みのOFF設定を復元する前に画像が出ないよう、初期状態では隠す。 #}
+<div
+    id="coco-avatar"
+    class="coco-avatar"
+    data-idle-manifest="{% static 'blog/coco/idle-v1/manifest.json' %}"
+    data-walk-manifest="{% static 'blog/coco/walk-v1/manifest.json' %}"
+    data-wave-manifest="{% static 'blog/coco/wave-v2/manifest.json' %}"
+    data-motion-catalog="{% static 'blog/coco/motions-v3.json' %}"
+    hidden
+>
+    <img
+        src="{% static 'blog/coco/neutral.png' %}"
+        width="512"
+        height="768"
+        alt=""
+        aria-hidden="true"
+        draggable="false"
+    >
+    <canvas width="512" height="768" aria-hidden="true" hidden></canvas>
+    {# キーボードでも操作できるよう、絵の上の操作領域には標準のbuttonを使う。 #}
+    <button
+        type="button"
+        class="coco-avatar-action"
+        data-coco-wave
+        aria-label="COCOに手を振ってもらう"
+        aria-disabled="false"
+        title="クリックで手を振る"
+    ></button>
+</div>
+
+{# 画像と操作の入口を分け、COCOをOFFにしても再表示できるようにする。 #}
+<div id="coco-settings" class="coco-settings" hidden>
+    <button
+        id="coco-settings-button"
+        type="button"
+        class="btn btn-outline-light coco-settings-button"
+        aria-label="COCOの設定"
+        aria-expanded="false"
+        aria-controls="coco-settings-panel"
+        title="COCOの設定"
+    >
+        <span aria-hidden="true">⚙</span>
+    </button>
+
+    <section
+        id="coco-settings-panel"
+        class="coco-settings-panel"
+        aria-labelledby="coco-settings-title"
+        hidden
+    >
+        <h2 id="coco-settings-title" class="coco-settings-title">COCOの設定</h2>
+        <button
+            id="coco-toggle"
+            type="button"
+            class="btn btn-sm btn-outline-light coco-toggle"
+            role="switch"
+            aria-checked="true"
+            aria-controls="coco-avatar"
+        >
+            COCO表示
+            <span data-coco-state aria-hidden="true">ON</span>
+        </button>
+
+    </section>
+</div>

@@ -1,0 +1,65 @@
+# 環境変数（パスワード等が入っているので絶対にGitにあげない）
+# ただし *.example はテンプレートなので tracked
+.env
+.env.*
+!.env*.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Django
+*.log
+*.pot
+*.sqlite3
+local_settings.py
+
+# 静的ファイル（collectstaticで生成される）
+/staticfiles/
+
+# メディアファイル（ユーザーがアップロードした画像）
+/media/
+
+# Markdownx の画像アップロード先
+/media/markdownx/
+
+# SSL証明書（自動生成・Git管理しない）
+/letsencrypt/
+/certbot/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 仮想環境
+venv/
+.venv/
+env/
+
+# pytest / coverage（第12章以降で生成）
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ローカル運用メモ・秘密鍵・バックアップを公開しない
+/.private/
+*.pem
+*.key
+*.p12
+*.pfx
+/backups/
+/db-dumps/
+
+# 公開用の作業記録・サーバー固有設定
+/logs/
+/publication-review/

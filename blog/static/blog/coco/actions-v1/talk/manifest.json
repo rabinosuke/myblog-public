@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "name": "talk",
+  "image": "sheet.png",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 768
+    },
+    {
+      "x": 512,
+      "y": 768
+    }
+  ],
+  "sequence": [
+    0,
+    1,
+    0,
+    2,
+    0,
+    1,
+    3,
+    2,
+    0
+  ],
+  "holdMs": [
+    400,
+    160,
+    120,
+    160,
+    200,
+    160,
+    120,
+    160,
+    520
+  ],
+  "periodMs": 2000,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}

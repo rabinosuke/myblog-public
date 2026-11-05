@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "name": "hop",
+  "image": "sheet.png",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0
+    },
+    {
+      "x": 1024,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 768
+    },
+    {
+      "x": 512,
+      "y": 768
+    },
+    {
+      "x": 1024,
+      "y": 768
+    }
+  ],
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    0
+  ],
+  "holdMs": [
+    800,
+    160,
+    80,
+    160,
+    120,
+    320,
+    600
+  ],
+  "periodMs": 2240,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}

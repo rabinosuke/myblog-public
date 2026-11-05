@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "name": "bashful",
+  "image": "sheet.png",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 768
+    },
+    {
+      "x": 512,
+      "y": 768
+    }
+  ],
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    2,
+    3,
+    2,
+    1,
+    0
+  ],
+  "holdMs": [
+    480,
+    180,
+    360,
+    280,
+    360,
+    280,
+    360,
+    180,
+    480
+  ],
+  "periodMs": 2960,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}

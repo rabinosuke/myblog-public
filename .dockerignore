@@ -1,0 +1,37 @@
+.env
+.env.*
+!.env.example
+.git
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 本番で生成される（root所有でビルドコンテキスト送信時にpermission deniedになる）
+letsencrypt/
+certbot/
+
+# ローカル開発用の生成物（イメージに含めない）
+media/
+staticfiles/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# 非公開の運用メモ・秘密鍵・バックアップをイメージに含めない
+.private/
+*.pem
+*.key
+*.p12
+*.pfx
+backups/
+db-dumps/
+
+# 実行時ログや作業指示書を実行イメージへ含めない
+logs/
+CLAUDE.md
+AGENTS.md

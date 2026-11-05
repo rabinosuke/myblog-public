@@ -1,0 +1,45 @@
+[tool.pytest.ini_options]
+# Django settings を pytest に教える
+DJANGO_SETTINGS_MODULE = "myblog.settings"
+
+# テストファイルとして認識するパターン
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+
+# テストクラスとして認識するパターン
+python_classes = ["Test*"]
+
+# テスト関数として認識するパターン
+python_functions = ["test_*"]
+
+# テスト実行時のオプション
+addopts = [
+    "--reuse-db",         # 毎回DB作り直さない（高速化）
+    "--strict-markers",   # 未定義マーカー使ったらエラー
+    "-ra",                # 失敗・スキップの理由を表示
+]
+# カスタムマーカーの定義
+markers = [
+    "slow: 重いテスト（複数件のデータ生成や時間がかかる処理）",
+]
+
+# カバレッジ計測対象
+[tool.coverage.run]
+source = ["blog"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "blog/admin.py",     # 管理画面はテスト対象外
+    "manage.py",
+]
+
+[tool.coverage.report]
+# この章の基本テストで通る現実的なライン。
+# より高いカバレッジ（80%超え）を目指す方法はスピンオフ記事で詳説予定。
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

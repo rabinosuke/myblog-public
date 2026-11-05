@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}サーバーエラー - COCO LAB{% endblock %}
+
+{% block content %}
+
+<div class="text-center py-5">
+
+    <img src="{% static 'blog/img/500.jpg' %}" alt="サーバーエラー"
+         class="img-fluid rounded mb-4" style="max-width: 600px;">
+
+    <h1 class="display-4 mb-3">500</h1>
+    <p class="lead mb-4">サーバーエラーが発生しました</p>
+    <p class="text-muted mb-4">
+        ただいま問題を修正中です。しばらく時間をおいてから再度お試しください。
+    </p>
+
+    <a href="{% url 'blog:index' %}" class="btn btn-primary rounded-pill px-4">
+        トップに戻る
+    </a>
+
+</div>
+
+{% endblock %}

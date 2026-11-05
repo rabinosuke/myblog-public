@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}ページが見つかりません - COCO LAB{% endblock %}
+
+{% block content %}
+
+<div class="text-center py-5">
+
+    <img src="{% static 'blog/img/404.jpg' %}" alt="ページが見つかりません"
+         class="img-fluid rounded mb-4" style="max-width: 600px;">
+
+    <h1 class="display-4 mb-3">404</h1>
+    <p class="lead mb-4">ページが見つかりません</p>
+    <p class="text-muted mb-4">
+        アクセスしようとしたページは削除されたか、URLが間違っている可能性があります。
+    </p>
+
+    <a href="{% url 'blog:index' %}" class="btn btn-primary rounded-pill px-4">
+        トップに戻る
+    </a>
+
+</div>
+
+{% endblock %}

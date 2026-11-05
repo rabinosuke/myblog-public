@@ -1,0 +1,189 @@
+/**
+ * キャラクター画像 円形クロップモーダル
+ *
+ * Cropper.js のクロップボックスを CSS で円形マスク化することで、
+ * 「丸くくり抜く」プレビュー感を出す。
+ * 実際の出力は正方形 PNG（CSS の border-radius:50% で円表示する前提）。
+ */
+
+#cc-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+}
+
+#cc-modal.show {
+    display: flex;
+}
+
+#cc-modal .cc-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+}
+
+#cc-modal .cc-dialog {
+    position: relative;
+    background: #fff;
+    width: min(92vw, 640px);
+    max-height: 92vh;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+#cc-modal .cc-header,
+#cc-modal .cc-footer {
+    padding: 12px 16px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#cc-modal .cc-footer {
+    border-top: 1px solid #ddd;
+    border-bottom: none;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+#cc-modal .cc-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+#cc-modal .cc-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 8px;
+}
+
+#cc-modal .cc-body {
+    padding: 16px;
+    background: #2a2a2a;
+    flex: 1;
+    overflow: auto;
+}
+
+#cc-modal .cc-image-area {
+    max-height: 60vh;
+}
+
+#cc-modal .cc-image-area img {
+    max-width: 100%;
+    display: block;
+}
+
+#cc-modal .cc-hint {
+    color: #ccc;
+    font-size: 12px;
+    margin: 8px 0 0;
+    text-align: center;
+}
+
+/* 円形マスク：Cropper.js が出すクロップボックスを丸くする */
+#cc-modal .cropper-view-box,
+#cc-modal .cropper-face {
+    border-radius: 50%;
+}
+
+#cc-modal .cropper-view-box {
+    box-shadow: 0 0 0 1px #39f;
+    outline: 0;
+}
+
+#cc-modal button {
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: 1px solid #999;
+    background: #fff;
+    font-size: 14px;
+}
+
+#cc-modal .cc-submit {
+    background: #417690;
+    color: #fff;
+    border-color: #417690;
+}
+
+#cc-modal .cc-submit:hover {
+    background: #205067;
+}
+
+/* CharacterAdmin の保存済み／保存前画像プレビュー */
+.cc-admin-preview {
+    padding: 14px;
+    border: 1px solid var(--hairline-color, #ddd);
+    border-radius: 8px;
+    background: var(--darkened-bg, #f8f8f8);
+    max-width: 460px;
+}
+
+.cc-preview-state {
+    margin: 0 0 12px;
+    font-weight: 600;
+    color: var(--body-fg, #333);
+}
+
+.cc-preview-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.cc-preview-images.is-hidden,
+.cc-preview-empty.is-hidden {
+    display: none;
+}
+
+.cc-preview-images figure {
+    margin: 0;
+    text-align: center;
+}
+
+.cc-preview-image {
+    display: block;
+    width: 180px;
+    height: 180px;
+    border: 1px solid var(--hairline-color, #ccc);
+    background-color: #fff;
+    object-fit: cover;
+}
+
+.cc-preview-square {
+    border-radius: 6px;
+}
+
+.cc-preview-circle {
+    border-radius: 50%;
+}
+
+.cc-preview-images figcaption {
+    margin-top: 7px;
+    color: var(--body-quiet-color, #666);
+    font-size: 12px;
+}
+
+.cc-preview-empty {
+    margin: 0;
+    color: var(--body-quiet-color, #666);
+}
+
+@media (max-width: 640px) {
+    .cc-preview-image {
+        width: 132px;
+        height: 132px;
+    }
+}

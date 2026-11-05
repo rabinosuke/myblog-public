@@ -1,0 +1,40 @@
+{# ページネーション部品。{% include 'blog/_pagination.html' %} で読み込んで使う #}
+{# page_obj（Django の Page オブジェクト）を受け取る前提 #}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav aria-label="ページネーション" class="my-5">
+    <ul class="pagination justify-content-center">
+
+        {# 前へ #}
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            {# 検索キーワード等のクエリパラメータを維持するため request.GET をコピーして使う #}
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">前へ</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">前へ</span></li>
+        {% endif %}
+
+        {# ページ番号 #}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {# 次へ #}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">次へ</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">次へ</span></li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}

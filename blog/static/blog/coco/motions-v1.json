@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "motions": {
+    "hop": "actions-v1/hop/manifest.json",
+    "talk": "actions-v1/talk/manifest.json",
+    "listen": "actions-v1/listen/manifest.json",
+    "think": "actions-v1/think/manifest.json",
+    "happy": "actions-v1/happy/manifest.json",
+    "surprised": "actions-v1/surprised/manifest.json",
+    "dejected": "actions-v1/dejected/manifest.json",
+    "sit": "actions-v1/sit/manifest.json",
+    "doze": "actions-v1/doze/manifest.json",
+    "peek": "actions-v1/peek/manifest.json"
+  }
+}

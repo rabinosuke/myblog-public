@@ -1,0 +1,58 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_migrate:
+        description: 'DBスキーマの追加も反映する（初回COCOはyes）'
+        required: true
+        default: 'no'
+        type: choice
+        options: ['no', 'yes']
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: myblog-production
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  deploy:
+    # 公開用リポジトリでは本番へ接続しない。自分の環境向けに設定するまで無効。
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require successful CI for this exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TARGET_REV: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?head_sha=$TARGET_REV&event=push&status=completed&per_page=100" \
+            --jq '[.workflow_runs[] | select(.conclusion == "success")] | length > 0' | grep -qx true
+
+      - name: Back up and deploy verified commit
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        env:
+          TARGET_REV: ${{ github.sha }}
+          MIGRATE_FLAG: ${{ inputs.run_migrate }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: TARGET_REV,MIGRATE_FLAG
+          command_timeout: 15m
+          script: |
+            set -eu
+            cd '${{ secrets.DEPLOY_PATH }}'
+            git fetch origin main
+            deploy_script=$(mktemp)
+            trap 'rm -f "$deploy_script"' EXIT
+            git show "$TARGET_REV:scripts/deploy-production.sh" > "$deploy_script"
+            bash "$deploy_script" "$TARGET_REV" "$MIGRATE_FLAG"

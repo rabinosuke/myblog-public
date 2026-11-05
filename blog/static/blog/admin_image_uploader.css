@@ -1,0 +1,215 @@
+/**
+ * 画像アップロード モーダル のスタイル
+ */
+
+#image-uploader-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+#image-uploader-modal.show {
+    display: flex;
+}
+
+.iu-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.iu-dialog {
+    position: relative;
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-radius: 8px;
+    width: 90vw;
+    max-width: 1100px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.iu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #444;
+}
+
+.iu-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+.iu-close {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 8px;
+}
+
+.iu-close:hover {
+    color: #fff;
+}
+
+.iu-body {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    padding: 16px 20px;
+    overflow: auto;
+    flex: 1;
+}
+
+.iu-image-area {
+    background: #1a1a1a;
+    border-radius: 4px;
+    overflow: hidden;
+    min-height: 400px;
+    max-height: 65vh;
+}
+
+#iu-source-image {
+    display: block;
+    max-width: 100%;
+}
+
+.iu-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+}
+
+.iu-section {
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.iu-section label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #c0c0c0;
+}
+
+.iu-required {
+    color: #ff5252;
+    margin-left: 4px;
+}
+
+.iu-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.iu-section input[type="number"],
+.iu-section input[type="text"] {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 80px;
+}
+
+.iu-section input[type="range"] {
+    width: 100%;
+}
+
+.iu-section button {
+    background: #417690;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.iu-section button:hover {
+    background: #2e5b73;
+}
+
+.iu-ratio {
+    background: #3a3a3a !important;
+    color: #ccc !important;
+}
+
+.iu-ratio.active {
+    background: #417690 !important;
+    color: #fff !important;
+}
+
+.iu-hint {
+    margin: 6px 0 0;
+    font-size: 11px;
+    color: #888;
+}
+
+.iu-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px;
+    border-top: 1px solid #444;
+}
+
+.iu-footer button {
+    padding: 8px 18px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#iu-cancel-btn {
+    background: #555;
+    color: #fff;
+}
+
+#iu-cancel-btn:hover {
+    background: #666;
+}
+
+#iu-submit-btn {
+    background: #28a745;
+    color: #fff;
+    font-weight: bold;
+}
+
+#iu-submit-btn:hover:not(:disabled) {
+    background: #218838;
+}
+
+#iu-submit-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+/* 小さい画面では縦並びに */
+@media (max-width: 900px) {
+    .iu-body {
+        grid-template-columns: 1fr;
+    }
+    .iu-image-area {
+        min-height: 300px;
+    }
+}

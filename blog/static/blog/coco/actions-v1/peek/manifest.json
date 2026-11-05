@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "name": "peek",
+  "image": "sheet.png",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0,
+      "offsetX": 190
+    },
+    {
+      "x": 0,
+      "y": 768,
+      "offsetX": 80
+    },
+    {
+      "x": 512,
+      "y": 768
+    },
+    null
+  ],
+  "sequence": [
+    4,
+    1,
+    2,
+    3,
+    2,
+    1,
+    4
+  ],
+  "holdMs": [
+    1000,
+    160,
+    200,
+    1440,
+    200,
+    160,
+    1000
+  ],
+  "periodMs": 4160,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}

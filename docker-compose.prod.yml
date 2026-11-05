@@ -1,0 +1,111 @@
+# ===========================================
+# 本番環境用 Docker Compose設定
+# ===========================================
+# 使い方:
+#   docker compose -f docker-compose.prod.yml up -d
+
+services:
+
+  # -------------------------------------------
+  # Nginx（Webサーバー）
+  # HTTPSを終端してDjangoに転送する
+  # -------------------------------------------
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx.prod.conf:/etc/nginx/nginx.conf:ro  # 本番用Nginx設定
+      - ./staticfiles:/app/staticfiles                     # 静的ファイル
+      - ./media:/app/media                                 # アップロード画像
+      - ./letsencrypt:/etc/letsencrypt                     # SSL証明書
+      - ./certbot/www:/var/www/certbot                     # 証明書取得用Webroot
+    ports:
+      - "80:80"    # HTTP（→HTTPSへリダイレクト）
+      - "443:443"  # HTTPS
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: always
+
+  # -------------------------------------------
+  # Django（アプリケーションサーバー）
+  # -------------------------------------------
+  web:
+    build: .
+    # 本番ではワーカー数を増やしてアクセス処理能力を上げる
+    # 公式推奨: (CPUコア数 × 2) + 1 = 3コアなら7だが、メモリ余裕みて4に
+    # 文ごとの音声生成（最大4回）を待てる上限。会話の同時実行数はDB側で別に制限。
+    command: gunicorn myblog.wsgi:application --bind 0.0.0.0:8000 --timeout 90 --workers 4
+    volumes:
+      # ソースは検証済みイメージから実行し、Git更新中のファイルを読み込まない。
+      - ./logs:/app/logs
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
+    # webのポートを外部公開せず、NginxがX-Real-IPを上書きする構成だけで信頼する。
+    environment:
+      COCO_CHAT_TRUST_PROXY: "true"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  # -------------------------------------------
+  # MySQL（データベース）
+  # 本番ではポートを外部公開しない（セキュリティ）
+  # -------------------------------------------
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+    # 本番ではDBを外部に公開しない（コンテナ間通信のみ）
+    # ports: の項目を意図的に削除している
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    restart: always
+
+  # -------------------------------------------
+  # Certbot（SSL証明書の自動更新）
+  # 12時間ごとに証明書をチェック、期限が近ければ自動更新
+  # 更新後の nginx reload は host 側 cron で行う（後述）
+  # 理由：certbot コンテナ内には nginx プロセスが居ないため
+  #       `nginx -s reload` を叩いても効かない（過去の構成バグ）
+  # -------------------------------------------
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # 12時間ごとに「期限近いか」をチェック、期限近ければ更新
+    # 実際の更新は2〜3ヶ月に1回しか発生しない（cert は 90日有効、30日前から更新対象）
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done'"
+    depends_on:
+      - nginx
+    restart: always
+
+# -------------------------------------------
+# 【重要】nginx に新証明書を読ませる方法
+# -------------------------------------------
+# host 側で以下の cron を設定してください（VPS の `crontab -e`）：
+#
+#   # 毎日 04:00 に nginx を reload（新証明書があれば反映）
+#   0 4 * * * cd /path/to/myblog && docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload
+#
+# 「証明書更新が無い日」も毎日 reload するが、reload は数十ミリ秒の処理で
+# 接続中リクエストにも影響しない（無停止リロード）ため害は無い。
+# docker.sock を露出させる sidecar 方式より安全。
+
+volumes:
+  mysql_data:
+

@@ -1,0 +1,138 @@
+[
+  {
+    "model": "blog.category",
+    "pk": 1,
+    "fields": {
+      "name": "Django",
+      "slug": "django"
+    }
+  },
+  {
+    "model": "blog.category",
+    "pk": 2,
+    "fields": {
+      "name": "Docker",
+      "slug": "docker"
+    }
+  },
+  {
+    "model": "blog.category",
+    "pk": 3,
+    "fields": {
+      "name": "Python",
+      "slug": "python"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 1,
+    "fields": {
+      "title": "AIと一緒に作るDjangoブログ入門",
+      "slug": "django-blog-intro",
+      "summary": "DockerとDjangoを使ってブログサイトをゼロから作る方法を解説します。",
+      "body": "## はじめに\n\nこの記事では **Docker** と **Django** を使ってブログサイトをゼロから作ります。\n\nMacには Docker さえあれば大丈夫です。Python も MySQL もインストール不要で、すべて Docker の中で動かします。\n\n## 必要なもの\n\n- Docker Desktop\n- VS Code\n- ターミナル\n\n## サンプルコード\n\nDjango のビュー関数はこんな感じで書きます：\n\n```python\nfrom django.shortcuts import render\n\ndef index(request):\n    posts = Post.objects.filter(is_published=True)\n    return render(request, 'blog/index.html', {'posts': posts})\n```\n\nテンプレートでは `{% for %}` で繰り返します：\n\n```html\n{% for post in posts %}\n  <h2>{{ post.title }}</h2>\n{% endfor %}\n```\n\n## まとめ\n\nDocker を使えば環境構築の悩みから解放されます。詳しくは [公式ドキュメント](https://docs.djangoproject.com/) も参照してください。",
+      "category": 1,
+      "is_published": true,
+      "is_featured": false,
+      "view_count": 0,
+      "published_at": "2026-05-21T00:00:00Z",
+      "created_at": "2026-05-21T00:00:00Z",
+      "updated_at": "2026-05-21T00:00:00Z"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 2,
+    "fields": {
+      "title": "Docker入門：なぜDockerを使うのか",
+      "slug": "docker-intro",
+      "summary": "MacにPythonをインストールしなくていい理由と、Dockerの仕組みを解説します。",
+      "body": "Dockerは仮想の箱を作るツールです。Pythonのプログラムを動かすには普通はMacにPythonをインストールする必要がありますが、Dockerを使うとPythonが入った箱を用意するだけでOKです。",
+      "category": 2,
+      "is_published": true,
+      "is_featured": false,
+      "view_count": 0,
+      "published_at": "2026-05-20T00:00:00Z",
+      "created_at": "2026-05-20T00:00:00Z",
+      "updated_at": "2026-05-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 3,
+    "fields": {
+      "title": "Bootstrap5でデザインを整える",
+      "slug": "bootstrap5-design",
+      "summary": "CSSを書かなくてもBootstrap5を使えば綺麗なデザインが作れます。",
+      "body": "Bootstrap5はCSSのフレームワークです。あらかじめ用意されたクラスをHTMLに書くだけでレスポンシブなレイアウトが作れます。グリッドシステムやカードなどのコンポーネントを活用しましょう。",
+      "category": 1,
+      "is_published": true,
+      "is_featured": false,
+      "view_count": 0,
+      "published_at": "2026-05-19T00:00:00Z",
+      "created_at": "2026-05-19T00:00:00Z",
+      "updated_at": "2026-05-19T00:00:00Z"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 4,
+    "fields": {
+      "title": "settings.pyの設定を理解する",
+      "slug": "settings-py-guide",
+      "summary": "DEBUG・ALLOWED_HOSTS・DATABASESなど重要な設定項目を解説します。",
+      "body": "DjangoのDEBUG・ALLOWED_HOSTS・DATABASESなど、settings.pyの重要な設定項目を初心者向けに丁寧に解説します。特にDEBUGは本番環境では必ずFalseにする必要があります。",
+      "category": 1,
+      "is_published": true,
+      "is_featured": false,
+      "view_count": 0,
+      "published_at": "2026-05-18T00:00:00Z",
+      "created_at": "2026-05-18T00:00:00Z",
+      "updated_at": "2026-05-18T00:00:00Z"
+    }
+  },
+  {
+    "model": "blog.post",
+    "pk": 5,
+    "fields": {
+      "title": "環境変数（.env）とは何か",
+      "slug": "env-file-guide",
+      "summary": "パスワードをコードに直接書いてはいけない理由を解説します。",
+      "body": "パスワードやシークレットキーをコードに直接書くとGitHubにあげたときに全世界に公開されてしまいます。.envファイルに書いてdotenvで読み込むのが安全な管理方法です。",
+      "category": 3,
+      "is_published": false,
+      "is_featured": false,
+      "view_count": 0,
+      "published_at": null,
+      "created_at": "2026-05-17T00:00:00Z",
+      "updated_at": "2026-05-17T00:00:00Z"
+    }
+  },
+  {
+    "model": "blog.displayslot",
+    "pk": 1,
+    "fields": {
+      "slot_type": "featured",
+      "post": 1,
+      "order": 0
+    }
+  },
+  {
+    "model": "blog.displayslot",
+    "pk": 2,
+    "fields": {
+      "slot_type": "pickup",
+      "post": 2,
+      "order": 0
+    }
+  },
+  {
+    "model": "blog.displayslot",
+    "pk": 3,
+    "fields": {
+      "slot_type": "pickup",
+      "post": 3,
+      "order": 1
+    }
+  }
+]

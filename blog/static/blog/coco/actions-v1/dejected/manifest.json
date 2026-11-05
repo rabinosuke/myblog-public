@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "name": "dejected",
+  "image": "sheet.png",
+  "frameWidth": 512,
+  "frameHeight": 768,
+  "frames": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 512,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 768
+    },
+    {
+      "x": 512,
+      "y": 768
+    }
+  ],
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    0
+  ],
+  "holdMs": [
+    800,
+    240,
+    1440,
+    320,
+    1200
+  ],
+  "periodMs": 4000,
+  "loop": false,
+  "reducedFrame": 2,
+  "reducedHoldMs": 600
+}
