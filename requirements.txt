@@ -8,7 +8,7 @@ gunicorn==26.0.0
 mysqlclient==2.2.8
 
 # 環境変数管理
-django-environ==0.13.0
+django-environ==0.14.0
 
 # 静的ファイル配信
 whitenoise==6.12.0
